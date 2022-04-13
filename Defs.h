@@ -12,22 +12,28 @@ typedef  signed long        int32;
 typedef  unsigned long      uint32;
 typedef  signed long long   int64;
 typedef  unsigned long long uint64
-
 C:\Program Files (x86)\Arduino\libraries
-
 */
+#define DIPSWITCH_1 13
+#define DIPSWITCH_2 12
+
 #define DOWNROLL 0
 #define UPROLL 1
 #define TEMP_HUM_ONBOARD_SENSOR_EXISTS
-#define TEMP_HUM_1_SENSOR_EXISTS
-#define TEMP_HUM_2_SENSOR_EXISTS
-#define TEMP_HUM_3_SENSOR_EXISTS  
+//#define TEMP_HUM_1_SENSOR_EXISTS
+//#define TEMP_HUM_2_SENSOR_EXISTS
+//#define TEMP_HUM_3_SENSOR_EXISTS  
 
 //#define PM25_DUST_SENSOR_EXISTS
 #define SDCARD_EXISTS
 #define OLEDDISPLAY_EXISTS
 //#define ENERGYMETER_EXISTS 
 //#define PROGRELAY_EXISTS 
+
+#define BME688_SENSOR_ADR4_EXISTS
+#define BME688_SENSOR_ADR5_EXISTS
+#define BME688_SENSOR_ADR6_EXISTS
+#define BME688_SENSOR_ADR7_EXISTS
 
 //#define LIGHT_SENSOR_EXISTS  
 //#define BAR_PRES_SENSOR_EXISTS  
@@ -47,8 +53,8 @@ C:\Program Files (x86)\Arduino\libraries
 
 #define ARM_MATH_CM0PLUS
 
-#define RELAY_OUT_1 23
-#define RELAY_OUT_2 53
+//#define RELAY_OUT_1 23
+//#define RELAY_OUT_2 53
 
 //#include "SdsDustSensor.h" // https://github.com/lewapek/sds-dust-sensors-arduino-library
 /*
@@ -249,6 +255,10 @@ void SensorAlt_Init();
 void SensorLight_Init();
 void SensorACccel_GyroInit();
 void Sensors_PeripInit();
+void SensorVoc_BME680_Init(uint8_t Channel);
+void SensorVoc_BME680_Read(uint8_t Channel);
+
+
 
 void CurrentVolt_Read();
 void AdcRead();

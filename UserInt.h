@@ -193,9 +193,13 @@ void PrintDisplayBuffer(void){
      Serial.print(F("GNUC_PATCHLEVEL: ")); 
     Serial.println(__GNUC_PATCHLEVEL__  );  
 */
-    Serial.print(F("RELAY 1:"));Serial.println(digitalRead(RELAY_OUT_1));
-    Serial.print(F("RELAY 2:"));Serial.println(digitalRead(RELAY_OUT_2));   
-     
+
+
+   // Serial.print(F("RELAY 1:"));Serial.println(digitalRead(RELAY_OUT_1));
+   // Serial.print(F("RELAY 2:"));Serial.println(digitalRead(RELAY_OUT_2));   
+    
+
+
     Serial.println();
     Serial.println();     
 }
@@ -217,6 +221,7 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
             str = "";//// show nothing                         
       break; 
         case DISPROLL_LINE1:  
+          #ifdef TEMP_HUM_ONBOARD_SENSOR_EXISTS      
           if (!isnan(Values.Temperature_OnBoard)) {
             str += String(Values.Temperature_OnBoard,1);
             str += F(" C");  Display.ExpSensOnb = ON;                           
@@ -230,8 +235,10 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           else   str +=F("----"); 
        //   str += ' ' + String(SensorId.OnBoard, HEX);
             str += F(" Internal Internal Internal Internal ");
+        #endif
       break;        
       case DISPROLL_LINE2:   
+        #ifdef TEMP_HUM_1_SENSOR_EXISTS
           if (!isnan(Values.Temperature_Ch1)) {
             str += String(Values.Temperature_Ch1,1);
             str += F(" C");  Display.ExpSens1 = ON;                           
@@ -243,9 +250,23 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           }
           else   str +=F("----"); 
           str += ' ' + String(SensorId.No1, HEX);
-          
+        #endif
+        #ifdef BME688_SENSOR_ADR4_EXISTS
+          if (!isnan(Bosch_BME688_4.Gas)) {
+            str += String(Bosch_BME688_4.Gas,1);
+            str += F(" KOhm ");                           
+          }
+          else  str += F("------");  
+          if (!isnan(Bosch_BME688_4.Temperature)) {
+            //str +=F(" %");
+            str += String(Bosch_BME688_4.Temperature); // 10...
+            str += F("*C"); 
+          }
+          else   str +=F("----"); 
+        #endif                
      break;
      case DISPROLL_LINE3:
+        #ifdef TEMP_HUM_2_SENSOR_EXISTS     
           //str = "4."; // temp sensor2
           if (!isnan(Values.Temperature_Ch2)) {
             str += String(Values.Temperature_Ch2,1);
@@ -258,9 +279,23 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           }
           else   str +=F("----");
           str += ' ' + String(SensorId.No2, HEX);  
-                    
+        #endif  
+        #ifdef BME688_SENSOR_ADR5_EXISTS
+          if (!isnan(Bosch_BME688_5.Gas)) {
+            str += String(Bosch_BME688_5.Gas,1);
+            str += F(" KOhm ");                           
+          }
+          else  str += F("------");  
+          if (!isnan(Bosch_BME688_5.Temperature)) {
+            //str +=F(" %");
+            str += String(Bosch_BME688_5.Temperature); // 10...
+            str += F("*C"); 
+          }
+          else   str +=F("----"); 
+        #endif                              
      break;
      case DISPROLL_LINE4:   
+        #ifdef TEMP_HUM_3_SENSOR_EXISTS     
         //str = "5."; // temp sensor3
          if (!isnan(Values.Temperature_Ch3)) {
             str += String(Values.Temperature_Ch3,1);
@@ -273,7 +308,20 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
         }
         else   str +=F("----");   // 10 lines
         str += ' ' + String(SensorId.No3, HEX); 
-                   
+        #endif  
+         #ifdef BME688_SENSOR_ADR6_EXISTS
+          if (!isnan(Bosch_BME688_6.Gas)) {
+            str += String(Bosch_BME688_6.Gas,1);
+            str += F(" KOhm ");                           
+          }
+          else  str += F("------");  
+          if (!isnan(Bosch_BME688_6.Temperature)) {
+            //str +=F(" %");
+            str += String(Bosch_BME688_6.Temperature); // 10...
+            str += F("*C"); 
+          }
+          else   str +=F("----"); 
+        #endif                            
      break;
      case DISPROLL_LINE5:   
         //str += Display_LineTry;
@@ -301,7 +349,20 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
              }
              else   //str += CALIBRATING; // 3/4/2   
                       str += CopyFlashToRam(CALIBRATING);        
-          #endif          
+          #endif 
+        #ifdef BME688_SENSOR_ADR7_EXISTS
+          if (!isnan(Bosch_BME688_7.Gas)) {
+            str += String(Bosch_BME688_7.Gas,1);
+            str += F(" KOhm ");                           
+          }
+          else  str += F("------");  
+          if (!isnan(Bosch_BME688_7.Temperature)) {
+            //str +=F(" %");
+            str += String(Bosch_BME688_7.Temperature); // 10...
+            str += F("*C"); 
+          }
+          else   str +=F("----"); 
+        #endif                       
      break;      
      case DISPROLL_LINE6:       
              #ifdef ENERGYMETER_EXISTS 
@@ -332,7 +393,8 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
                   else str += String(Values.PM25,0);
             #endif               
      break;  
-     case DISPROLL_LINE8:    
+     case DISPROLL_LINE8: 
+          /*  
           str += "R1:";
           str += String(digitalRead(RELAY_OUT_1)); //7 + 1   
           str += " ";  
@@ -345,14 +407,16 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           str += " ";           
           for(int i = 0; i < MAXNOCHAR; i++){
             str += RlStr4[i];
-          }        
+          }    
+          */    
       break;  
-      case DISPROLL_LINE9:       
+      case DISPROLL_LINE9:   
+          /*   
           str += "R2:" +String(digitalRead(RELAY_OUT_2))+ " "; //7 + 1
           for(int i = 0; i < MAXNOCHAR; i++){
             str += RlStr6[i];  // Limit Str length to 4 20.4 // 124. // 1378
           }      
-          /*
+          
           str += " " +  RL2Val + " "; 
           for(int i = 0; i < MAXNOCHAR; i++){
             str += RlStr8[i];

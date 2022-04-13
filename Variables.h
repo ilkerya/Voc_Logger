@@ -94,6 +94,29 @@ EnergyIcVariables EnergyMeterIC ;
 
 #endif  
 
+#if (defined BME688_SENSOR_ADR4_EXISTS  || defined BME688_SENSOR_ADR5_EXISTS  || defined  BME688_SENSOR_ADR6_EXISTS || defined BME688_SENSOR_ADR7_EXISTS )
+struct Sensor_BME688_Bosch
+{
+  float Temperature = 0;
+  float Humidity = 0;  
+  float Pressure = 0;
+  float Gas = 0;  
+};
+#endif
+
+#ifdef BME688_SENSOR_ADR4_EXISTS 
+  Sensor_BME688_Bosch Bosch_BME688_4;
+#endif
+#ifdef BME688_SENSOR_ADR5_EXISTS 
+  Sensor_BME688_Bosch Bosch_BME688_5;
+#endif
+#ifdef BME688_SENSOR_ADR6_EXISTS 
+  Sensor_BME688_Bosch Bosch_BME688_6;
+#endif
+#ifdef BME688_SENSOR_ADR7_EXISTS 
+  Sensor_BME688_Bosch Bosch_BME688_7;
+#endif
+
 // so variables
                      
 String Display_Line1 ="Display.........Line1"; 
@@ -121,9 +144,11 @@ uint8_t DispRollIndex[4] = {1,0,0,0};
 //2 1 9 8 
 //3 2 1 9  
 //4 3 2 1  
+/*
 float RL1Min, RL1Max, RL2Min,RL2Max,CompValue;
 String RLlVal, RL2Val;
 String Relay1str, RlStr2, RlStr4, Relay2str, RlStr6,  RlStr8;
+*/
 #define ELEMENTS 12
  const String KeyWords[12]   = {"Tmp1","Tmp2","Tmp3","Hum1","Hum2","Hum3","PM25","PM10","Cur","Volt","Powr","PF",};
 

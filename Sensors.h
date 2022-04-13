@@ -37,6 +37,14 @@ SdsDustSensor sds(rxPin, txPin);
   Adafruit_Si7021 THsensor = Adafruit_Si7021();
 #endif
 
+
+#if (defined BME688_SENSOR_ADR4_EXISTS  || defined BME688_SENSOR_ADR5_EXISTS  || defined  BME688_SENSOR_ADR6_EXISTS || defined BME688_SENSOR_ADR7_EXISTS )
+  #include <Adafruit_Sensor.h>
+  #include "Adafruit_BME680.h"
+  #define SEALEVELPRESSURE_HPA (1013.25)
+  Adafruit_BME680 bme; // I2C
+#endif
+
 #ifdef LIGHT_SENSOR_EXISTS  
   #include "Adafruit_TSL2591.h"
   Adafruit_TSL2591 tsl = Adafruit_TSL2591(2591); // pass in a number for the sensor identifier (for your use later)
@@ -62,7 +70,7 @@ void Sensors_PeripInit(void){
   #ifdef TEMP_HUM_ONBOARD_SENSOR_EXISTS
     SensorInit_Si072(SI072_ONBOARD_SENSOR_ADDR); // TEMP HUM
   #else
-    Serial.print(F("No OnBoard Sensor !!"));Serial.print(F("SI072_ONBOARD_SENSOR"));
+    Serial.print(F("No OnBoard Sensor !!"));Serial.println(F("SI072_ONBOARD_SENSOR"));
   #endif 
 
   #ifdef TEMP_HUM_1_SENSOR_EXISTS
@@ -82,6 +90,22 @@ void Sensors_PeripInit(void){
   #else
   // Serial.print(F("No Sensor On Channel!!"));Serial.print(F("SI072_THIRD_SENSOR"));
   #endif 
+
+
+
+ #ifdef  BME688_SENSOR_ADR4_EXISTS
+    SensorVoc_BME680_Init(4);   
+#endif 
+ #ifdef  BME688_SENSOR_ADR5_EXISTS
+    SensorVoc_BME680_Init(5);   
+#endif 
+ #ifdef  BME688_SENSOR_ADR6_EXISTS
+    SensorVoc_BME680_Init(6);   
+#endif 
+ #ifdef  BME688_SENSOR_ADR7_EXISTS
+    SensorVoc_BME680_Init(7);   
+#endif 
+
       
   #ifdef BAR_PRES_SENSOR_EXISTS 
      SensorAlt_Init();     //BAROMETRIC PRESSURE
@@ -203,6 +227,89 @@ void PrintPMValues(uint8_t PMError, uint8_t PMCount){
     }
 }
  #endif 
+
+void SensorVoc_BME680_Init(uint8_t Channel){
+      tcaselect(Channel);    
+      if (bme.begin()) {
+       // Set up oversampling and filter initialization
+        bme.setTemperatureOversampling(BME680_OS_8X);
+        bme.setHumidityOversampling(BME680_OS_2X);
+        bme.setPressureOversampling(BME680_OS_4X);
+        bme.setIIRFilterSize(BME680_FILTER_SIZE_3);
+        bme.setGasHeater(320, 150); // 320*C for 150 ms
+      }
+      else {
+        Serial.print("Could not find a valid BME680 sensor On Channel:");Serial.println(Channel);       
+       // while (1);
+    }
+} 
+void SensorVoc_BME680_Read(uint8_t Channel){
+    tcaselect(Channel);
+    if (! bme.performReading()) {
+      Serial.print("Failed to perform BME680 reading On Channel :");     
+      Serial.println(Channel);
+      return;
+    }
+    switch(Channel){
+      #ifdef BME688_SENSOR_ADR4_EXISTS
+      case 4 : 
+        Bosch_BME688_4.Temperature = bme.temperature;
+        Bosch_BME688_4.Humidity = bme.humidity;
+        Bosch_BME688_4.Pressure = bme.pressure  / 100.0;
+        Bosch_BME688_4.Gas = bme.gas_resistance / 1000.0;
+      break;
+    #endif 
+      #ifdef BME688_SENSOR_ADR5_EXISTS    
+      case 5 : 
+        Bosch_BME688_5.Temperature = bme.temperature;
+        Bosch_BME688_5.Humidity = bme.humidity;
+        Bosch_BME688_5.Pressure = bme.pressure  / 100.0;
+        Bosch_BME688_5.Gas = bme.gas_resistance / 1000.0;
+      break;
+    #endif     
+      #ifdef BME688_SENSOR_ADR6_EXISTS      
+      case 6 : 
+        Bosch_BME688_6.Temperature = bme.temperature;
+        Bosch_BME688_6.Humidity = bme.humidity;
+        Bosch_BME688_6.Pressure = bme.pressure  / 100.0;
+        Bosch_BME688_6.Gas = bme.gas_resistance / 1000.0;
+      break;
+    #endif   
+       #ifdef BME688_SENSOR_ADR7_EXISTS       
+      case 7 : 
+        Bosch_BME688_7.Temperature = bme.temperature;
+        Bosch_BME688_7.Humidity = bme.humidity;
+        Bosch_BME688_7.Pressure = bme.pressure  / 100.0;
+        Bosch_BME688_7.Gas = bme.gas_resistance / 1000.0;
+      break;
+    #endif       
+      default:
+
+      break;
+  
+    }
+          
+    Serial.print(Channel);Serial.println(".Channel :");   
+          
+     // Serial.print("Temperature = "); 
+      Serial.print(bme.temperature); Serial.println(" *C");
+   // display.print("Temperature: "); display.print(bme.temperature); display.println(" *C");
+
+    //Serial.print("Pressure = "); 
+    Serial.print(bme.pressure / 100.0); Serial.println(" hPa");
+   // display.print("Pressure: "); display.print(bme.pressure / 100); display.println(" hPa");
+
+    //Serial.print("Humidity = "); 
+    Serial.print(bme.humidity); Serial.println(" %");
+   // display.print("Humidity: "); display.print(bme.humidity); display.println(" %");
+
+    //Serial.print("Gas = "); 
+    Serial.print(bme.gas_resistance / 1000.0); Serial.println(" KOhms");
+  //  display.print("Gas: "); display.print(bme.gas_resistance / 1000.0); display.println(" KOhms");
+      
+}
+
+
 
 #ifdef ACCL_GYRO_SENSOR_EXISTS 
 void SensorACccel_GyroInit(){

@@ -355,6 +355,20 @@ void SD_Card_Header_Preparation(){
          dataString += String(SensorId.No3, HEX);
          dataString += F("),");     
       #endif     
+      #ifdef  BME688_SENSOR_ADR4_EXISTS
+          dataString += F("Temp_Adr4(*C),Hum_Adr4(%),Press_Adr4(hPa),Gas_Adr4(KOhms),");
+      #endif 
+      #ifdef  BME688_SENSOR_ADR5_EXISTS
+          dataString += F("Temp_Adr5(*C),Hum_Adr5(%),Press_Adr5(hPa),Gas_Adr5(KOhms),") ;     
+      #endif 
+      #ifdef  BME688_SENSOR_ADR6_EXISTS
+          dataString += F("Temp_Adr6(*C),Hum_Adr6(%),Press_Adr6(hPa),Gas_Adr6(KOhms),");  
+      #endif 
+      #ifdef  BME688_SENSOR_ADR7_EXISTS
+          dataString += F("Temp_Adr7(*C),Press_Adr7(hPa),Hum_Adr7(%),Gas_Adr7(KOhms),");
+      #endif 
+
+      
       #ifdef LEM_CURRENT_EXISTS 
         dataString += F("Current(A)rms,");
       #endif   
@@ -397,6 +411,24 @@ void SD_Card_Data_Preparation(){
       #ifdef TEMP_HUM_3_SENSOR_EXISTS 
         dataString += String(Values.Temperature_Ch3)+ ',' + String(Values.Humidity_Ch3)+ ',';
       #endif   
+      #ifdef  BME688_SENSOR_ADR4_EXISTS
+        dataString += String(Bosch_BME688_4.Temperature)+ ',' + String(Bosch_BME688_4.Humidity)+ ',';
+        dataString += String(Bosch_BME688_4.Pressure)+ ',' + String(Bosch_BME688_4.Gas)+ ',';
+      #endif 
+      #ifdef  BME688_SENSOR_ADR5_EXISTS
+        dataString += String(Bosch_BME688_5.Temperature)+ ',' + String(Bosch_BME688_5.Humidity)+ ',';
+        dataString += String(Bosch_BME688_5.Pressure)+ ',' + String(Bosch_BME688_5.Gas)+ ',';  
+      #endif 
+      #ifdef  BME688_SENSOR_ADR6_EXISTS
+         dataString += String(Bosch_BME688_6.Temperature)+ ',' + String(Bosch_BME688_6.Humidity)+ ',';
+        dataString += String(Bosch_BME688_6.Pressure)+ ',' + String(Bosch_BME688_6.Gas)+ ','; 
+      #endif 
+      #ifdef  BME688_SENSOR_ADR7_EXISTS
+        dataString += String(Bosch_BME688_7.Temperature)+ ',' + String(Bosch_BME688_7.Humidity)+ ',';
+        dataString += String(Bosch_BME688_7.Pressure)+ ',' + String(Bosch_BME688_7.Gas)+ ',';
+      #endif 
+
+      
       #ifdef LEM_CURRENT_EXISTS 
         dataString += String(Current_Mains_Rms) + ',';
       #endif  

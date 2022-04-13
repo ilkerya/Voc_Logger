@@ -157,6 +157,23 @@ void Common_Loop(){
     SensorRead_Si072(SI072_THIRD_SENSOR_ADDR); // MULTIPLEXER NO
 #endif
 
+
+
+
+
+ #ifdef  BME688_SENSOR_ADR4_EXISTS
+    SensorVoc_BME680_Read(4);   
+#endif 
+ #ifdef  BME688_SENSOR_ADR5_EXISTS
+    SensorVoc_BME680_Read(5);   
+#endif 
+ #ifdef  BME688_SENSOR_ADR6_EXISTS
+    SensorVoc_BME680_Read(6);   
+#endif 
+ #ifdef  BME688_SENSOR_ADR7_EXISTS
+    SensorVoc_BME680_Read(7);   
+#endif 
+
 #ifdef ENERGYMETER_EXISTS
      EnergymeterCalbLed( );
 #endif
@@ -213,7 +230,7 @@ void Common_Loop(){
           SDS_DustSensor();
       #endif
 
-    Relay_loop();
+   // Relay_loop();
  
     Display.ValueTimer++;
     if (Display.ValueTimer > 4)Display.ValueTimer = 0;
@@ -302,12 +319,14 @@ void IO_Settings() {
   pinMode(ADE9153A_CALB_BUTTON, INPUT_PULLUP);
    
   #endif
+
+/*  
   digitalWrite(RELAY_OUT_1, LOW);
   pinMode(RELAY_OUT_1, OUTPUT);  // SS Pin high to avoid miscommunication
 
   digitalWrite(RELAY_OUT_2, LOW);
   pinMode(RELAY_OUT_2, OUTPUT);  // SS Pin high to avoid miscommunication
-
+*/
   pinMode(10, OUTPUT);
   digitalWrite(10, HIGH);
   
@@ -315,6 +334,11 @@ void IO_Settings() {
   digitalWrite(LED_GREEN, LOW);       // turn on pullup resistors
   pinMode(LED_RED, OUTPUT);           // set pin to input
   digitalWrite(LED_RED, LOW);       // turn on pullup resistors
+
+  pinMode(DIPSWITCH_1, INPUT);           // set pin to input
+  pinMode(DIPSWITCH_2, INPUT);           // set pin to input
+
+  
 /*
   pinMode(KEY_LEFT, INPUT);           // set pin to input
   pinMode(KEY_LEFT, INPUT_PULLUP);
@@ -425,7 +449,7 @@ void MicroInit() {
 #endif
 
 }
-
+/*
 void Parse_FileString(){
   int DelimCount=0;
   int j = 0;
@@ -531,6 +555,7 @@ float GetValue(uint8_t Relay){
   if(Val == KeyWords[11]) return  Values.PowerFactor;     
   return 0;
 }
+
 void Relay_loop() {
  // Parse_FileString();
   CompValue = 0;
@@ -562,3 +587,4 @@ void Relay_loop() {
   Serial.print(F("      RELAY2: "));Serial.println(RELAY_OUT_2);
   Serial.print(F("RL2Max: "));Serial.println(RL2Max);  
 }
+*/
