@@ -30,10 +30,39 @@ C:\Program Files (x86)\Arduino\libraries
 //#define ENERGYMETER_EXISTS 
 //#define PROGRELAY_EXISTS 
 
-#define BME688_SENSOR_ADR4_EXISTS
-#define BME688_SENSOR_ADR5_EXISTS
-#define BME688_SENSOR_ADR6_EXISTS
-#define BME688_SENSOR_ADR7_EXISTS
+
+/*
+                                  // ON PCB DESIGNATOR
+#define BME688_SENSOR_ADR7_EXISTS // MD1
+#define BME688_SENSOR_ADR6_EXISTS // MD2
+#define BME688_SENSOR_ADR0_EXISTS // MD3
+#define BME688_SENSOR_ADR1_EXISTS // MD4
+
+#define GROVE_GAS_V2_ADR3_EXISTS // MD5
+#define GROVE_GAS_V2_ADR2_EXISTS // MD6
+#define GROVE_GAS_V2_ADR5_EXISTS // MD7
+#define GROVE_GAS_V2_ADR4_EXISTS // MD8
+*/
+#define BME688_SENSOR_MD1_EXISTS // ADR7
+#define BME688_SENSOR_MD2_EXISTS // ADR6
+#define BME688_SENSOR_MD3_EXISTS // ADR0
+#define BME688_SENSOR_MD4_EXISTS // ADR1
+
+#define GROVE_GAS_V2_MD5_EXISTS // ADR3
+#define GROVE_GAS_V2_MD6_EXISTS // ADR2
+#define GROVE_GAS_V2_MD7_EXISTS // ADR5
+#define GROVE_GAS_V2_MD8_EXISTS // ADR4
+
+#define ADR_MD1 7  //PCB ADRESS MATCHING
+#define ADR_MD2 6
+#define ADR_MD3 0
+#define ADR_MD4 1
+
+#define ADR_MD5 3
+#define ADR_MD6 2
+#define ADR_MD7 5
+#define ADR_MD8 4
+
 
 //#define LIGHT_SENSOR_EXISTS  
 //#define BAR_PRES_SENSOR_EXISTS  
@@ -257,7 +286,8 @@ void SensorACccel_GyroInit();
 void Sensors_PeripInit();
 void SensorVoc_BME680_Init(uint8_t Channel);
 void SensorVoc_BME680_Read(uint8_t Channel);
-
+void SensorGroveV2_Init(uint8_t Channel);
+void SensorGroveV2_Read(uint8_t Channel);
 
 
 void CurrentVolt_Read();
@@ -303,6 +333,7 @@ float GetValue(uint8_t Relay);
 String LimitCopyDisplayStr(String str, uint8_t MaxNumber);
 void EnergyMeterIC_Operation(void);
 void I2_ACK_Reset(void);
+void tcaselect(uint8_t i);
 
 void SetResetLog(bool Enable);
 void NVRam_Write_LogStatus(bool Mode);

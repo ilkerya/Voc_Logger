@@ -64,7 +64,7 @@ static const char SETTINGUP[] PROGMEM     = "SettingUp"; //21-3
 static const char  CALIBRATING[] PROGMEM  = "Calibrating";
 static const char  ICERROR[]   PROGMEM    = " IC Error";
 
-static const char  Repository[] PROGMEM = "https://github.com/ilkerya/Proximab";
+static const char  Repository[] PROGMEM = "https://github.com/ilkerya/Voc_Logger";
 static const char  Terminal_1[] PROGMEM = "For Adjusting date&time send as below format";
 static const char  Terminal_2[] PROGMEM = "Year,Month,Date,Hour,Minute;Second";
 static const char  Terminal_3[] PROGMEM = "2020,05,27,21,14,23";
@@ -94,27 +94,55 @@ EnergyIcVariables EnergyMeterIC ;
 
 #endif  
 
-#if (defined BME688_SENSOR_ADR4_EXISTS  || defined BME688_SENSOR_ADR5_EXISTS  || defined  BME688_SENSOR_ADR6_EXISTS || defined BME688_SENSOR_ADR7_EXISTS )
+#if (defined GROVE_GAS_V2_MD8_EXISTS  || defined GROVE_GAS_V2_MD7_EXISTS  || defined  GROVE_GAS_V2_MD6_EXISTS || defined GROVE_GAS_V2_MD5_EXISTS )
+struct Sensor_GroveGas_V2
+{
+  uint32_t NO2 = 0;
+  uint32_t C2H5OH = 0;  
+  uint32_t VOC = 0;
+  uint32_t CO = 0;  
+};
+
+Sensor_GroveGas_V2 Multi_Gas;
+
+#endif
+
+#ifdef GROVE_GAS_V2_MD5_EXISTS 
+  Sensor_GroveGas_V2 Multi_Gas_1;
+#endif
+#ifdef GROVE_GAS_V2_MD6_EXISTS 
+  Sensor_GroveGas_V2 Multi_Gas_2;
+#endif
+#ifdef GROVE_GAS_V2_MD7_EXISTS 
+  Sensor_GroveGas_V2 Multi_Gas_3;
+#endif
+#ifdef GROVE_GAS_V2_MD8_EXISTS 
+  Sensor_GroveGas_V2 Multi_Gas_4;
+#endif
+
+
+#if (defined BME688_SENSOR_MD1_EXISTS  || defined BME688_SENSOR_MD2_EXISTS  || defined  BME688_SENSOR_MD3_EXISTS || defined BME688_SENSOR_MD4_EXISTS )
 struct Sensor_BME688_Bosch
 {
   float Temperature = 0;
   float Humidity = 0;  
   float Pressure = 0;
-  float Gas = 0;  
+  float Gas = 0; 
+  uint8_t Exists = 0; 
 };
 #endif
 
-#ifdef BME688_SENSOR_ADR4_EXISTS 
+#ifdef BME688_SENSOR_MD1_EXISTS 
+  Sensor_BME688_Bosch Bosch_BME688_1;
+#endif
+#ifdef BME688_SENSOR_MD2_EXISTS 
+  Sensor_BME688_Bosch Bosch_BME688_2;
+#endif
+#ifdef BME688_SENSOR_MD3_EXISTS 
+  Sensor_BME688_Bosch Bosch_BME688_3;
+#endif
+#ifdef BME688_SENSOR_MD4_EXISTS 
   Sensor_BME688_Bosch Bosch_BME688_4;
-#endif
-#ifdef BME688_SENSOR_ADR5_EXISTS 
-  Sensor_BME688_Bosch Bosch_BME688_5;
-#endif
-#ifdef BME688_SENSOR_ADR6_EXISTS 
-  Sensor_BME688_Bosch Bosch_BME688_6;
-#endif
-#ifdef BME688_SENSOR_ADR7_EXISTS 
-  Sensor_BME688_Bosch Bosch_BME688_7;
 #endif
 
 // so variables
@@ -187,7 +215,6 @@ uint8_t SampleTime = TASK_2SEC; // 250msec 1 // 500 2 // 1Sec 4 // 2sec 8 // 5se
 // the logging file
 File logfile;
 String dataString = "";
-//char LOG_FILE[] =  "LOG_xxxx.csv";
 char LOG_FILE[] =  "Lxxxx_01.csv";
 const char ConfigFile[] PROGMEM =  "RLConfig.txt";
 char Device_Id[5] = {'0','0','0','0','\0'}; 

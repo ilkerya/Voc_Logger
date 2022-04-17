@@ -157,21 +157,30 @@ void Common_Loop(){
     SensorRead_Si072(SI072_THIRD_SENSOR_ADDR); // MULTIPLEXER NO
 #endif
 
-
-
-
-
- #ifdef  BME688_SENSOR_ADR4_EXISTS
-    SensorVoc_BME680_Read(4);   
+ #ifdef  BME688_SENSOR_MD1_EXISTS
+    SensorVoc_BME680_Read(ADR_MD1);   
 #endif 
- #ifdef  BME688_SENSOR_ADR5_EXISTS
-    SensorVoc_BME680_Read(5);   
+ #ifdef  BME688_SENSOR_MD2_EXISTS
+    SensorVoc_BME680_Read(ADR_MD2);   
 #endif 
- #ifdef  BME688_SENSOR_ADR6_EXISTS
-    SensorVoc_BME680_Read(6);   
+ #ifdef  BME688_SENSOR_MD3_EXISTS
+    SensorVoc_BME680_Read(ADR_MD3);   
 #endif 
- #ifdef  BME688_SENSOR_ADR7_EXISTS
-    SensorVoc_BME680_Read(7);   
+ #ifdef  BME688_SENSOR_MD4_EXISTS
+    SensorVoc_BME680_Read(ADR_MD4);   
+#endif 
+
+#ifdef GROVE_GAS_V2_MD5_EXISTS
+    SensorGroveV2_Read(ADR_MD5);
+#endif 
+#ifdef GROVE_GAS_V2_MD6_EXISTS
+    SensorGroveV2_Read(ADR_MD6);
+#endif 
+#ifdef GROVE_GAS_V2_MD7_EXISTS
+    SensorGroveV2_Read(ADR_MD7);
+#endif 
+#ifdef GROVE_GAS_V2_MD8_EXISTS
+    SensorGroveV2_Read(ADR_MD8);
 #endif 
 
 #ifdef ENERGYMETER_EXISTS

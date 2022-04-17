@@ -38,12 +38,18 @@ SdsDustSensor sds(rxPin, txPin);
 #endif
 
 
-#if (defined BME688_SENSOR_ADR4_EXISTS  || defined BME688_SENSOR_ADR5_EXISTS  || defined  BME688_SENSOR_ADR6_EXISTS || defined BME688_SENSOR_ADR7_EXISTS )
+#if (defined BME688_SENSOR_MD1_EXISTS  || defined BME688_SENSOR_MD2_EXISTS  || defined  BME688_SENSOR_MD3_EXISTS || defined BME688_SENSOR_MD4_EXISTS )
   #include <Adafruit_Sensor.h>
   #include "Adafruit_BME680.h"
   #define SEALEVELPRESSURE_HPA (1013.25)
   Adafruit_BME680 bme; // I2C
 #endif
+
+#if (defined GROVE_GAS_V2_MD5_EXISTS  || defined GROVE_GAS_V2_MD6_EXISTS  || defined  GROVE_GAS_V2_MD7_EXISTS || defined GROVE_GAS_V2_MD8_EXISTS )
+    #include <Multichannel_Gas_GMXXX.h>
+    GAS_GMXXX<TwoWire> gas;
+#endif
+
 
 #ifdef LIGHT_SENSOR_EXISTS  
   #include "Adafruit_TSL2591.h"
@@ -93,19 +99,31 @@ void Sensors_PeripInit(void){
 
 
 
- #ifdef  BME688_SENSOR_ADR4_EXISTS
-    SensorVoc_BME680_Init(4);   
+ #ifdef  BME688_SENSOR_MD1_EXISTS
+    SensorVoc_BME680_Init(ADR_MD1);   
 #endif 
- #ifdef  BME688_SENSOR_ADR5_EXISTS
-    SensorVoc_BME680_Init(5);   
+ #ifdef  BME688_SENSOR_MD2_EXISTS
+    SensorVoc_BME680_Init(ADR_MD2);   
 #endif 
- #ifdef  BME688_SENSOR_ADR6_EXISTS
-    SensorVoc_BME680_Init(6);   
+ #ifdef  BME688_SENSOR_MD3_EXISTS
+    SensorVoc_BME680_Init(ADR_MD3);   
 #endif 
- #ifdef  BME688_SENSOR_ADR7_EXISTS
-    SensorVoc_BME680_Init(7);   
+ #ifdef  BME688_SENSOR_MD4_EXISTS
+    SensorVoc_BME680_Init(ADR_MD4);   
 #endif 
 
+#ifdef GROVE_GAS_V2_MD5_EXISTS
+    SensorGroveV2_Init(ADR_MD5);
+#endif 
+#ifdef GROVE_GAS_V2_MD6_EXISTS
+    SensorGroveV2_Init(ADR_MD6);
+#endif 
+#ifdef GROVE_GAS_V2_MD7_EXISTS
+    SensorGroveV2_Init(ADR_MD7);
+#endif 
+#ifdef GROVE_GAS_V2_MD8_EXISTS
+    SensorGroveV2_Init(ADR_MD8);
+#endif 
       
   #ifdef BAR_PRES_SENSOR_EXISTS 
      SensorAlt_Init();     //BAROMETRIC PRESSURE
@@ -129,105 +147,63 @@ void Sensors_PeripInit(void){
     Serial.print(F("PMSensor Serial Port Init "));
    #endif 
 }
-void tcaselect(uint8_t i) {
- // if (i > 7) return;
-  Wire.beginTransmission(TCAADDR);
-    //  https://learn.adafruit.com/adafruit-tca9548a-1-to-8-i2c-multiplexer-breakout
-    Wire.write(1 << i);
-    Wire.endTransmission();
-    delay(2);
-}
-/*
-void I2_ACK_TimeoutSet(void){
-  I2CSet =ON;
-}
 
-void I2_ACK_TimeoutReset(void){
-   I2CSet = OFF;
-   I2CTimer = ACK_TIMEOUT;
-}
 
-void I2_ACK_Reset(void){
-    if(!I2CSet)return;
-    if(I2CTimer){
-      I2CTimer--;
-      return;
-    } 
-     pinMode(I2C_TIMEOUT, OUTPUT);  // 
-     digitalWrite(I2C_TIMEOUT, LOW); 
-     delay(1);
-     I2CTimer = ACK_TIMEOUT;
-     I2CSet = OFF;
-     pinMode(I2C_TIMEOUT, INPUT);  // 
-     I2Error = ON;
+#if (defined GROVE_GAS_V2_MD5_EXISTS  || defined GROVE_GAS_V2_MD6_EXISTS  || defined  GROVE_GAS_V2_MD7_EXISTS || defined GROVE_GAS_V2_MD8_EXISTS )
+void SensorGroveV2_Init(uint8_t Channel){
+  tcaselect(Channel);    
+  gas.begin(Wire, 0x08); // use the hardware I2C
 }
-*/
-#ifdef PM25_DUST_SENSOR_EXISTS  
-void PrintPMValues(uint8_t PMError, uint8_t PMCount){
-  /*
-      Serial.println();
-      for(int i=0; i<BUF_LENGTH;i++){  
-          Serial.print(i); Serial.print('.'); Serial.print(PMBuffer[i]);Serial.print("    ");
-          if(i==9)Serial.println();  
-          if(i==19)Serial.println();  
-          if(i==29)Serial.println();  
-          if(i==39)Serial.println(); 
-          if(i==49)Serial.println();       
-      }
-      */
-     Serial.println();  
-      Serial.print(F("PMCount "));Serial.println(PMCount);
-      Serial.print(F("PM25 "));Serial.println(Values.PM25);
-      Serial.print(F("PM10 "));Serial.println(Values.PM10);
-      Serial.print(F("PMError "));Serial.println(PMError);         
-}
- void SerialPortPMSensor() {   
-    if (Serial1.available()) {
-    //  uint8_t Rx;
-      uint8_t RxCount=0;
-      uint16_t PM25Val=0;
-      uint16_t PM10Val=0;
-      uint8_t PMError = 0; 
-      uint8_t PMCount = 0; 
-      unsigned char checksum = 32; 
-      
-        for(int i=0; i<BUF_LENGTH;i++){   
-          PMBuffer[i] = 0;
-        }   
-        while (Serial1.available()) {
-            uint8_t Rx = Serial1.read();
-            if(RxCount < BUF_LENGTH)PMBuffer[RxCount] =  Rx; 
-            RxCount++;      
-        }
-        Serial1.flush();      
-        for(int i=0; i<BUF_LENGTH;i++){
-            if(PMBuffer[i] == 0XAA){
-              if(PMBuffer[i+1] == 0XC0){
-                    checksum=(unsigned char)(PMBuffer[i+2]+PMBuffer[i+3]+PMBuffer[i+4]+PMBuffer[i+5]+ PMBuffer[i+6]+PMBuffer[i+7]);                         
-                    if(checksum == PMBuffer[i+8]){ 
-                        PMCount++;  
-                        PM25Val += (256 * PMBuffer[i+3])+PMBuffer[i+2];
-                        PM10Val += (256 * PMBuffer[i+5])+PMBuffer[i+4];                                  
-                    }
-                    else PMError++;  
-              }
-          }       
-      }
-      if(PMCount){
-          Values.PM25 =  (float)(PM25Val / PMCount)/10;
-          Values.PM10 =  (float)(PM10Val / PMCount)/10;
-          if(Values.PM25 >= 250)Values.PM25 = 250;
-          if(Values.PM10 >= 250)Values.PM25 = 250;       
-      }
-      else{
-          Values.PM25 =  0;
-          Values.PM10 =  0;   
-      }
-      PrintPMValues(PMError,PMCount);  
+void SensorGroveV2_Read(uint8_t Channel){
+   // uint32_t val1,uint32_t val2,uint32_t val3,uint32_t val4,
+    uint8_t LineNo;
+    tcaselect(Channel);
+
+    switch(Channel){
+      #ifdef GROVE_GAS_V2_MD5_EXISTS
+      case ADR_MD5 :  Multi_Gas_1 = Multi_Gas;
+                      LineNo = ADR_MD5;
+      break;
+    #endif 
+      #ifdef GROVE_GAS_V2_MD6_EXISTS    
+      case ADR_MD6 : Multi_Gas_2 = Multi_Gas;
+                     LineNo = ADR_MD6;
+      break;
+    #endif     
+      #ifdef GROVE_GAS_V2_MD7_EXISTS      
+      case ADR_MD7 : Multi_Gas_3 = Multi_Gas;
+                     LineNo = ADR_MD7;
+      break;
+    #endif   
+       #ifdef GROVE_GAS_V2_MD8_EXISTS       
+      case ADR_MD8 : Multi_Gas_4 = Multi_Gas;
+                     LineNo = ADR_MD8;
+      break;
+    #endif       
+      default:
+
+      break; 
     }
+
+    Serial.print(F("Channel : "));Serial.println(LineNo);
+
+    Multi_Gas.NO2 = gas.measure_NO2(); Serial.print(F("NO2: ")); Serial.print(Multi_Gas.NO2); Serial.print(F("  =  "));
+    Serial.print(gas.calcVol(Multi_Gas.NO2)); Serial.println("V");
+    
+    Multi_Gas.C2H5OH = gas.measure_C2H5OH(); Serial.print(F("C2H5OH: ")); Serial.print(Multi_Gas.C2H5OH); Serial.print(F("  =  "));
+    Serial.print(gas.calcVol(Multi_Gas.C2H5OH)); Serial.println("V");
+    
+    Multi_Gas.VOC = gas.measure_VOC(); Serial.print(F("VOC: ")); Serial.print(Multi_Gas.VOC); Serial.print(F("  =  "));
+    Serial.print(gas.calcVol(Multi_Gas.VOC)); Serial.println("V");
+    
+    Multi_Gas.CO = gas.measure_CO(); Serial.print(F("CO: ")); Serial.print(Multi_Gas.CO); Serial.print(F("  =  "));
+    Serial.print(gas.calcVol(Multi_Gas.CO)); Serial.println("V");     
+        
 }
+
  #endif 
 
+#if (defined BME688_SENSOR_MD1_EXISTS  || defined BME688_SENSOR_MD2_EXISTS  || defined  BME688_SENSOR_MD3_EXISTS || defined BME688_SENSOR_MD4_EXISTS )
 void SensorVoc_BME680_Init(uint8_t Channel){
       tcaselect(Channel);    
       if (bme.begin()) {
@@ -239,75 +215,84 @@ void SensorVoc_BME680_Init(uint8_t Channel){
         bme.setGasHeater(320, 150); // 320*C for 150 ms
       }
       else {
-        Serial.print("Could not find a valid BME680 sensor On Channel:");Serial.println(Channel);       
+        Serial.print(F("Could not find a valid BME680 sensor On Channel:"));Serial.println(Channel);       
        // while (1);
     }
 } 
 void SensorVoc_BME680_Read(uint8_t Channel){
     tcaselect(Channel);
     if (! bme.performReading()) {
-      Serial.print("Failed to perform BME680 reading On Channel :");     
+      Serial.print(F("Failed to perform BME680 reading On Channel :"));     
       Serial.println(Channel);
+      switch(Channel){
+        case ADR_MD4 :Bosch_BME688_4.Exists = 0;
+        break;
+        case ADR_MD3 :Bosch_BME688_3.Exists = 0;
+        break;
+        case ADR_MD2 :Bosch_BME688_2.Exists = 0;
+        break;
+        case ADR_MD1 :Bosch_BME688_1.Exists = 0;
+        break;        
+        default:
+        break;          
+      } 
       return;
     }
+    uint8_t LineNo;
     switch(Channel){
-      #ifdef BME688_SENSOR_ADR4_EXISTS
-      case 4 : 
+      #ifdef BME688_SENSOR_MD4_EXISTS
+      case ADR_MD4 : 
         Bosch_BME688_4.Temperature = bme.temperature;
         Bosch_BME688_4.Humidity = bme.humidity;
         Bosch_BME688_4.Pressure = bme.pressure  / 100.0;
         Bosch_BME688_4.Gas = bme.gas_resistance / 1000.0;
+        Bosch_BME688_4.Exists = 1;
+        LineNo = ADR_MD4;
       break;
     #endif 
-      #ifdef BME688_SENSOR_ADR5_EXISTS    
-      case 5 : 
-        Bosch_BME688_5.Temperature = bme.temperature;
-        Bosch_BME688_5.Humidity = bme.humidity;
-        Bosch_BME688_5.Pressure = bme.pressure  / 100.0;
-        Bosch_BME688_5.Gas = bme.gas_resistance / 1000.0;
+      #ifdef BME688_SENSOR_MD3_EXISTS    
+      case ADR_MD3 : 
+        Bosch_BME688_3.Temperature = bme.temperature;
+        Bosch_BME688_3.Humidity = bme.humidity;
+        Bosch_BME688_3.Pressure = bme.pressure  / 100.0;
+        Bosch_BME688_3.Gas = bme.gas_resistance / 1000.0;
+        Bosch_BME688_3.Exists = 1;
+        LineNo = ADR_MD3;
       break;
     #endif     
-      #ifdef BME688_SENSOR_ADR6_EXISTS      
-      case 6 : 
-        Bosch_BME688_6.Temperature = bme.temperature;
-        Bosch_BME688_6.Humidity = bme.humidity;
-        Bosch_BME688_6.Pressure = bme.pressure  / 100.0;
-        Bosch_BME688_6.Gas = bme.gas_resistance / 1000.0;
+      #ifdef BME688_SENSOR_MD2_EXISTS      
+      case ADR_MD2 : 
+        Bosch_BME688_2.Temperature = bme.temperature;
+        Bosch_BME688_2.Humidity = bme.humidity;
+        Bosch_BME688_2.Pressure = bme.pressure  / 100.0;
+        Bosch_BME688_2.Gas = bme.gas_resistance / 1000.0;
+        Bosch_BME688_2.Exists = 1;
+        LineNo = ADR_MD2;
       break;
     #endif   
-       #ifdef BME688_SENSOR_ADR7_EXISTS       
-      case 7 : 
-        Bosch_BME688_7.Temperature = bme.temperature;
-        Bosch_BME688_7.Humidity = bme.humidity;
-        Bosch_BME688_7.Pressure = bme.pressure  / 100.0;
-        Bosch_BME688_7.Gas = bme.gas_resistance / 1000.0;
+       #ifdef BME688_SENSOR_MD1_EXISTS       
+      case ADR_MD1 : 
+        Bosch_BME688_1.Temperature = bme.temperature;
+        Bosch_BME688_1.Humidity = bme.humidity;
+        Bosch_BME688_1.Pressure = bme.pressure  / 100.0;
+        Bosch_BME688_1.Gas = bme.gas_resistance / 1000.0;
+        Bosch_BME688_1.Exists = 1;
+        LineNo = ADR_MD1;
       break;
     #endif       
       default:
 
-      break;
-  
-    }
-          
-    Serial.print(Channel);Serial.println(".Channel :");   
-          
-     // Serial.print("Temperature = "); 
-      Serial.print(bme.temperature); Serial.println(" *C");
-   // display.print("Temperature: "); display.print(bme.temperature); display.println(" *C");
-
-    //Serial.print("Pressure = "); 
-    Serial.print(bme.pressure / 100.0); Serial.println(" hPa");
-   // display.print("Pressure: "); display.print(bme.pressure / 100); display.println(" hPa");
-
-    //Serial.print("Humidity = "); 
-    Serial.print(bme.humidity); Serial.println(" %");
-   // display.print("Humidity: "); display.print(bme.humidity); display.println(" %");
-
-    //Serial.print("Gas = "); 
-    Serial.print(bme.gas_resistance / 1000.0); Serial.println(" KOhms");
-  //  display.print("Gas: "); display.print(bme.gas_resistance / 1000.0); display.println(" KOhms");
-      
+      break; 
+    }  
+     
+    Serial.print(LineNo);Serial.print(F(".Channel BME688  "));          
+    Serial.print(bme.temperature); Serial.print(F(" *C   "));
+    Serial.print(bme.pressure / 100.0); Serial.print(F(" hPa   "));
+    Serial.print(bme.humidity); Serial.print(F(" %    "));
+    Serial.print(bme.gas_resistance / 1000.0); Serial.println(F(" KOhms"));  
 }
+
+#endif // endof #if (defined BME688_SENSOR_ADR4_EXISTS  || d.....
 
 
 
@@ -408,7 +393,7 @@ void SensorRead_Si072(unsigned char Channel){
       Serial.println(F("Not Defined Any Sensor!"));
       return;
     } 
-     tcaselect(Channel);
+    tcaselect(Channel);
     float Temperature = THsensor.readTemperature(); 
     float Humidity = THsensor.readHumidity(); 
     /*
@@ -730,6 +715,104 @@ void SDS_DustSensor(void) {
 #endif
 
 }
+void tcaselect(uint8_t i) {
+ // if (i > 7) return;
+  Wire.beginTransmission(TCAADDR);
+    //  https://learn.adafruit.com/adafruit-tca9548a-1-to-8-i2c-multiplexer-breakout
+    Wire.write(1 << i);
+    Wire.endTransmission();
+    delay(2);
+}
+/*
+void I2_ACK_TimeoutSet(void){
+  I2CSet =ON;
+}
+
+void I2_ACK_TimeoutReset(void){
+   I2CSet = OFF;
+   I2CTimer = ACK_TIMEOUT;
+}
+
+void I2_ACK_Reset(void){
+    if(!I2CSet)return;
+    if(I2CTimer){
+      I2CTimer--;
+      return;
+    } 
+     pinMode(I2C_TIMEOUT, OUTPUT);  // 
+     digitalWrite(I2C_TIMEOUT, LOW); 
+     delay(1);
+     I2CTimer = ACK_TIMEOUT;
+     I2CSet = OFF;
+     pinMode(I2C_TIMEOUT, INPUT);  // 
+     I2Error = ON;
+}
+*/
+#ifdef PM25_DUST_SENSOR_EXISTS  
+void PrintPMValues(uint8_t PMError, uint8_t PMCount){
+  /*
+      Serial.println();
+      for(int i=0; i<BUF_LENGTH;i++){  
+          Serial.print(i); Serial.print('.'); Serial.print(PMBuffer[i]);Serial.print("    ");
+          if(i==9)Serial.println();  
+          if(i==19)Serial.println();  
+          if(i==29)Serial.println();  
+          if(i==39)Serial.println(); 
+          if(i==49)Serial.println();       
+      }
+      */
+     Serial.println();  
+      Serial.print(F("PMCount "));Serial.println(PMCount);
+      Serial.print(F("PM25 "));Serial.println(Values.PM25);
+      Serial.print(F("PM10 "));Serial.println(Values.PM10);
+      Serial.print(F("PMError "));Serial.println(PMError);         
+}
+ void SerialPortPMSensor() {   
+    if (Serial1.available()) {
+    //  uint8_t Rx;
+      uint8_t RxCount=0;
+      uint16_t PM25Val=0;
+      uint16_t PM10Val=0;
+      uint8_t PMError = 0; 
+      uint8_t PMCount = 0; 
+      unsigned char checksum = 32; 
+      
+        for(int i=0; i<BUF_LENGTH;i++){   
+          PMBuffer[i] = 0;
+        }   
+        while (Serial1.available()) {
+            uint8_t Rx = Serial1.read();
+            if(RxCount < BUF_LENGTH)PMBuffer[RxCount] =  Rx; 
+            RxCount++;      
+        }
+        Serial1.flush();      
+        for(int i=0; i<BUF_LENGTH;i++){
+            if(PMBuffer[i] == 0XAA){
+              if(PMBuffer[i+1] == 0XC0){
+                    checksum=(unsigned char)(PMBuffer[i+2]+PMBuffer[i+3]+PMBuffer[i+4]+PMBuffer[i+5]+ PMBuffer[i+6]+PMBuffer[i+7]);                         
+                    if(checksum == PMBuffer[i+8]){ 
+                        PMCount++;  
+                        PM25Val += (256 * PMBuffer[i+3])+PMBuffer[i+2];
+                        PM10Val += (256 * PMBuffer[i+5])+PMBuffer[i+4];                                  
+                    }
+                    else PMError++;  
+              }
+          }       
+      }
+      if(PMCount){
+          Values.PM25 =  (float)(PM25Val / PMCount)/10;
+          Values.PM10 =  (float)(PM10Val / PMCount)/10;
+          if(Values.PM25 >= 250)Values.PM25 = 250;
+          if(Values.PM10 >= 250)Values.PM25 = 250;       
+      }
+      else{
+          Values.PM25 =  0;
+          Values.PM10 =  0;   
+      }
+      PrintPMValues(PMError,PMCount);  
+    }
+}
+ #endif 
 
 void WindSensorRead() {
   /*

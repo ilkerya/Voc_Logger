@@ -6,8 +6,8 @@
 //   Year,Month,Date,Hour,Minute;Second
 //   2022,03,22,23,23,50
 //  2020,12,24,22,48,55 TIME DATE COMMAND
-// DEVIDf567   // DEV ID COMMAND
-// FILEQUE01 // FILE NO COMMAND
+// DEVIDf567   // DEV ID COMMAND  DEVIDXXXX     Lxxxx_77.CSV  xxxx = 0000 - FFFF
+// FILEQUE01 // FILE NO COMMAND   FILEQUEXX      LAB75_xx.CSV  xx = 00 - 99
 // https://www.browserling.com/tools/random-hex
 // 115200 baud Both NL & CR
 // put leading zero for numbers less than 10

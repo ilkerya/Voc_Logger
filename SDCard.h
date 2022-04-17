@@ -76,7 +76,7 @@ void UpdateFileQue(){
     uint16_t Que= (LOG_FILE[6]-48) *10;
     Que += LOG_FILE[7]-48;
   //  Serial.print(F("Que ")); Serial.println(Que); 
-    #define MAXLOGFILESIZE 1048576 //2048
+    #define MAXLOGFILESIZE 1048576 //2048  = max single filesize 1 MByte "1048576"
     if(FileSize.Total > MAXLOGFILESIZE){ // 1Mbyte 
        if(Que<100){
           Que++;
@@ -355,19 +355,32 @@ void SD_Card_Header_Preparation(){
          dataString += String(SensorId.No3, HEX);
          dataString += F("),");     
       #endif     
-      #ifdef  BME688_SENSOR_ADR4_EXISTS
-          dataString += F("Temp_Adr4(*C),Hum_Adr4(%),Press_Adr4(hPa),Gas_Adr4(KOhms),");
+      #ifdef  BME688_SENSOR_MD1_EXISTS
+          dataString += F("BS688Temp_1(*C),BS688Hum_1(%),BS688Press_1(hPa),BS688Gas_1(KOhms),");
       #endif 
-      #ifdef  BME688_SENSOR_ADR5_EXISTS
-          dataString += F("Temp_Adr5(*C),Hum_Adr5(%),Press_Adr5(hPa),Gas_Adr5(KOhms),") ;     
+      #ifdef  BME688_SENSOR_MD2_EXISTS
+          dataString += F("BS688Temp_2(*C),BS688Hum_2(%),BS688Press_2(hPa),BS688Gas_2(KOhms),") ;     
       #endif 
-      #ifdef  BME688_SENSOR_ADR6_EXISTS
-          dataString += F("Temp_Adr6(*C),Hum_Adr6(%),Press_Adr6(hPa),Gas_Adr6(KOhms),");  
+      #ifdef  BME688_SENSOR_MD3_EXISTS
+          dataString += F("BS688Temp_3(*C),BS688Hum_3(%),BS688Press_3(hPa),BS688Gas_3(KOhms),");  
       #endif 
-      #ifdef  BME688_SENSOR_ADR7_EXISTS
-          dataString += F("Temp_Adr7(*C),Press_Adr7(hPa),Hum_Adr7(%),Gas_Adr7(KOhms),");
+      #ifdef  BME688_SENSOR_MD4_EXISTS
+          dataString += F("BS688Temp_4(*C),BS688Hum_4(%),BS688Press_4(hPa),BS688Gas_4(KOhms),");
       #endif 
 
+
+      #ifdef  GROVE_GAS_V2_MD5_EXISTS
+            dataString += F("NO2_1(),C2H5OH_1(),VOC_1(),CO_1(),");
+      #endif 
+      #ifdef  GROVE_GAS_V2_MD6_EXISTS
+            dataString += F("NO2_2(),C2H5OH_2(),VOC_2(),CO_2(),");
+      #endif 
+      #ifdef  GROVE_GAS_V2_MD7_EXISTS
+            dataString += F("NO2_3(),C2H5OH_3(),VOC_3(),CO_3(),");
+      #endif 
+      #ifdef  GROVE_GAS_V2_MD8_EXISTS
+            dataString += F("NO2_4(),C2H5OH_4(),VOC_4(),CO_4(),");
+      #endif 
       
       #ifdef LEM_CURRENT_EXISTS 
         dataString += F("Current(A)rms,");
@@ -411,23 +424,40 @@ void SD_Card_Data_Preparation(){
       #ifdef TEMP_HUM_3_SENSOR_EXISTS 
         dataString += String(Values.Temperature_Ch3)+ ',' + String(Values.Humidity_Ch3)+ ',';
       #endif   
-      #ifdef  BME688_SENSOR_ADR4_EXISTS
+      #ifdef  BME688_SENSOR_MD1_EXISTS
+        dataString += String(Bosch_BME688_1.Temperature)+ ',' + String(Bosch_BME688_1.Humidity)+ ',';
+        dataString += String(Bosch_BME688_1.Pressure)+ ',' + String(Bosch_BME688_1.Gas)+ ',';
+      #endif 
+      #ifdef  BME688_SENSOR_MD2_EXISTS
+        dataString += String(Bosch_BME688_2.Temperature)+ ',' + String(Bosch_BME688_2.Humidity)+ ',';
+        dataString += String(Bosch_BME688_2.Pressure)+ ',' + String(Bosch_BME688_2.Gas)+ ',';  
+      #endif 
+      #ifdef  BME688_SENSOR_MD3_EXISTS
+         dataString += String(Bosch_BME688_3.Temperature)+ ',' + String(Bosch_BME688_3.Humidity)+ ',';
+        dataString += String(Bosch_BME688_3.Pressure)+ ',' + String(Bosch_BME688_3.Gas)+ ','; 
+      #endif 
+      #ifdef  BME688_SENSOR_MD4_EXISTS
         dataString += String(Bosch_BME688_4.Temperature)+ ',' + String(Bosch_BME688_4.Humidity)+ ',';
         dataString += String(Bosch_BME688_4.Pressure)+ ',' + String(Bosch_BME688_4.Gas)+ ',';
       #endif 
-      #ifdef  BME688_SENSOR_ADR5_EXISTS
-        dataString += String(Bosch_BME688_5.Temperature)+ ',' + String(Bosch_BME688_5.Humidity)+ ',';
-        dataString += String(Bosch_BME688_5.Pressure)+ ',' + String(Bosch_BME688_5.Gas)+ ',';  
-      #endif 
-      #ifdef  BME688_SENSOR_ADR6_EXISTS
-         dataString += String(Bosch_BME688_6.Temperature)+ ',' + String(Bosch_BME688_6.Humidity)+ ',';
-        dataString += String(Bosch_BME688_6.Pressure)+ ',' + String(Bosch_BME688_6.Gas)+ ','; 
-      #endif 
-      #ifdef  BME688_SENSOR_ADR7_EXISTS
-        dataString += String(Bosch_BME688_7.Temperature)+ ',' + String(Bosch_BME688_7.Humidity)+ ',';
-        dataString += String(Bosch_BME688_7.Pressure)+ ',' + String(Bosch_BME688_7.Gas)+ ',';
-      #endif 
 
+
+      #ifdef  GROVE_GAS_V2_MD5_EXISTS
+        dataString += String(Multi_Gas_1.NO2)+ ',' + String(Multi_Gas_1.C2H5OH)+ ',';
+        dataString += String(Multi_Gas_1.VOC)+ ',' + String(Multi_Gas_1.CO)+ ',';
+      #endif 
+      #ifdef  GROVE_GAS_V2_MD6_EXISTS
+        dataString += String(Multi_Gas_2.NO2)+ ',' + String(Multi_Gas_2.C2H5OH)+ ',';
+        dataString += String(Multi_Gas_2.VOC)+ ',' + String(Multi_Gas_2.CO)+ ',';
+      #endif 
+      #ifdef  GROVE_GAS_V2_MD7_EXISTS
+        dataString += String(Multi_Gas_3.NO2)+ ',' + String(Multi_Gas_3.C2H5OH)+ ',';
+        dataString += String(Multi_Gas_3.VOC)+ ',' + String(Multi_Gas_3.CO)+ ',';
+      #endif 
+       #ifdef  GROVE_GAS_V2_MD8_EXISTS
+        dataString += String(Multi_Gas_4.NO2)+ ',' + String(Multi_Gas_4.C2H5OH)+ ',';
+        dataString += String(Multi_Gas_4.VOC)+ ',' + String(Multi_Gas_4.CO)+ ',';
+      #endif      
       
       #ifdef LEM_CURRENT_EXISTS 
         dataString += String(Current_Mains_Rms) + ',';
