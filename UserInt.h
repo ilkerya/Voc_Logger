@@ -217,9 +217,17 @@ void PrintDisplayBuffer(void){
     strcpy(char_array, s.c_str()); 
 */
 
+//char TempSign = (char) TEMPERATURE_ASCII_CODE;
+//String CelsiusDegree = "";
+
 #define MAXNOCHAR 4
 void UpdateProperLine(uint8_t Index, uint8_t Line){
-    String str = String(Index)+ ".";    
+    #define TEMPERATURE_DEGREE_ASCII 247  // FOR OLED DISPLAY https://en.wikipedia.org/wiki/Code_page_437
+    String CelsiusDegree = "";  
+    CelsiusDegree = (char)TEMPERATURE_DEGREE_ASCII;
+    CelsiusDegree +=  "C";
+    
+    String str = String(Index)+ ".";
     switch(Index){
       case DISPROLL_LINE0: 
             str = "";//// show nothing                         
@@ -228,7 +236,8 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           #ifdef TEMP_HUM_ONBOARD_SENSOR_EXISTS      
           if (!isnan(Values.Temperature_OnBoard)) {
             str += String(Values.Temperature_OnBoard,1);
-            str += F(" C");  Display.ExpSensOnb = ON;                           
+            str += CelsiusDegree;   
+           // str += F(" C");  Display.ExpSensOnb = ON;                           
           }
           else  str += F("------");       
           if (!isnan(Values.Humidity_OnBoard)) {
@@ -265,7 +274,8 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           if (!isnan(Bosch_BME688_1.Temperature)) {
             //str +=F(" %");
             str += String(Bosch_BME688_1.Temperature); // 10...
-            str += F("*C"); 
+            //str += F("*C"); 
+            str += CelsiusDegree; 
           }
           else   str +=F("----"); 
         }
@@ -297,7 +307,8 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           if (!isnan(Bosch_BME688_2.Temperature)) {
             //str +=F(" %");
             str += String(Bosch_BME688_2.Temperature); // 10...
-            str += F("*C"); 
+            //str += F("*C"); 
+            str += CelsiusDegree; 
           }
           else   str +=F("----"); 
         }
@@ -329,7 +340,8 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           if (!isnan(Bosch_BME688_3.Temperature)) {
             //str +=F(" %");
             str += String(Bosch_BME688_3.Temperature); // 10...
-            str += F("*C"); 
+           // str += F("*C"); 
+            str += CelsiusDegree; 
           }
           else   str +=F("----"); 
         }
@@ -373,7 +385,8 @@ void UpdateProperLine(uint8_t Index, uint8_t Line){
           if (!isnan(Bosch_BME688_4.Temperature)) {
             //str +=F(" %");
             str += String(Bosch_BME688_4.Temperature); // 10...
-            str += F("*C"); 
+            //str += F("*C"); 
+            str += CelsiusDegree; 
           }
           else   str +=F("----");
          }

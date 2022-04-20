@@ -290,6 +290,15 @@ void SD_Card_Init(){
           default: SDCard.PauseTimer = 50;
           break;                                           
       }
+/*
+      if(SDCard.PauseCount <= 16){
+        SDCard.PauseTimer = (SDCard.PauseCount * 2) + 10;     
+        SDCard.PauseCount++;
+      }
+      else SDCard.PauseTimer = 50;
+*/
+      
+      
       DispEnable_4SD_Prblm(ON,(60-SDCard.PauseTimer));
       //SDCard.PauseTimer = 15;
       SDCard.LogBootInit = OFF;     

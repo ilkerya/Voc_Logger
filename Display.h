@@ -182,7 +182,7 @@ void testdrawchar(void) {
   // delay(2000);
 }
 
-
+/*
 void UpdateDispSpChar(uint8_t Index, uint8_t Line) {
     switch (Line) {
       case 4: display.setCursor(36, 24); //x,y
@@ -226,7 +226,7 @@ void UpdateDispSpChar(uint8_t Index, uint8_t Line) {
   }
 }
 
-
+*/
 
 void displayValues(void){
   UpdateDisplayBuffer();
@@ -259,12 +259,12 @@ void displayValues(void){
 
   display.setCursor(0, 48);
   display.print(Display_Line7);   //10
-
+/*
   UpdateDispSpChar(DispRollIndex[0], 4); // Line 4
   UpdateDispSpChar(DispRollIndex[1], 5); // Line 5
   UpdateDispSpChar(DispRollIndex[2], 6); // Line 6
   UpdateDispSpChar(DispRollIndex[3], 7); // Line 7
-
+*/
   display.setCursor(0, 56); // 8th line
   display.print(Display_Line8);   //10
   /*

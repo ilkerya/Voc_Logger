@@ -3,7 +3,7 @@ http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf
 
 git add .
 git commit -m "Comment"
-git push https://github.com/ilkerya/Pangolin.git master
+git push https://github.com/ilkerya/VOC_Logger.git master
 
 First Time
 git init
