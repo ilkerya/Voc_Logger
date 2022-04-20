@@ -379,16 +379,16 @@ void SD_Card_Header_Preparation(){
 
 
       #ifdef  GROVE_GAS_V2_MD5_EXISTS
-            dataString += F("NO2_1(),C2H5OH_1(),VOC_1(),CO_1(),");
+            dataString += F("NO2_1(),C2H5OH_1(),VOC_1(adc),CO_1(),");
       #endif 
       #ifdef  GROVE_GAS_V2_MD6_EXISTS
-            dataString += F("NO2_2(),C2H5OH_2(),VOC_2(),CO_2(),");
+            dataString += F("NO2_2(),C2H5OH_2(),VOC_2(adc),CO_2(),");
       #endif 
       #ifdef  GROVE_GAS_V2_MD7_EXISTS
-            dataString += F("NO2_3(),C2H5OH_3(),VOC_3(),CO_3(),");
+            dataString += F("NO2_3(),C2H5OH_3(),VOC_3(adc),CO_3(),");
       #endif 
       #ifdef  GROVE_GAS_V2_MD8_EXISTS
-            dataString += F("NO2_4(),C2H5OH_4(),VOC_4(),CO_4(),");
+            dataString += F("NO2_4(),C2H5OH_4(),VOC_4(adc),CO_4(),");
       #endif 
       
       #ifdef LEM_CURRENT_EXISTS 
