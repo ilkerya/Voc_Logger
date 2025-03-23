@@ -20,7 +20,7 @@ git push https://github.com/ilkerya/Pangolin master
 
 https://help.github.com/articles/fetching-a-remote/
 
-
+  
 In case in the first push gives error use below command
 git remote add origin remote repository URL
 git push origin master
